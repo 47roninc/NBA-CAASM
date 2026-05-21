@@ -113,7 +113,9 @@ function fmtN(v,dec){if(dec===undefined)dec=1;var n=parseFloat(v);return isNaN(n
    t=0 best, t=0.5 median, t=1 worst */
 function gradColor3(t){
   t=Math.max(0,Math.min(1,t));
-  var stops=[[148,63,255],[245,200,66],[255,71,87]];
+  /* purple(best) -> lime-yellow(median) -> red(worst)
+     purple=#8B3FFF rgb(139,63,255), lime-yellow rgb(168,230,0), red rgb(255,71,87) */
+  var stops=[[139,63,255],[168,230,0],[255,71,87]];
   if(t<=0.5){
     var f=t/0.5;
     var c1=stops[0],c2=stops[1];
@@ -129,7 +131,7 @@ function statColor(stat, v, higherBetter){
   if(higherBetter===undefined)higherBetter=true;
   var n=parseFloat(v);if(isNaN(n))return 'var(--t3)';
   var r=STAT_RANGES[stat];if(!r)return 'var(--t3)';
-  /* Map value to t: 0=best, 1=worst, with p50 mapping to t=0.5 */
+  /* Map: best->t=0->purple, p50->t=0.5->green(rainbow middle), worst->t=1->red */
   var t;
   if(higherBetter){
     if(n>=r.hi)t=0;
@@ -142,7 +144,7 @@ function statColor(stat, v, higherBetter){
     else if(n<=r.hi)t=0.5+0.5*((n-r.p50)/(r.hi-r.p50));
     else t=1;
   }
-  return gradColor3(Math.max(0,Math.min(1,t)));
+  return gradColor2(Math.max(0,Math.min(1,t)));
 }
 
 function numCell(v,dec,stat,higherBetter){
@@ -306,7 +308,7 @@ function doSort(){
     if(k==='name')return d*(a.name<b.name?-1:a.name>b.name?1:0);
     var av=parseFloat(a[k]),bv=parseFloat(b[k]);
     if(isNaN(av))av=-9999;if(isNaN(bv))bv=-9999;
-    return d*(bv-av);
+    return d*(av-bv);
   });
 }
 function applyFilters(){
